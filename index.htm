@@ -1,0 +1,299 @@
+b<html lang="pt-PT">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>SYL - Safe Your Life (Pedestre)</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://cdn.ably.com/lib/ably.min-1.js"></script>
+  <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+</head>
+<body>
+
+    <div id="identification-modal" class="auth-overlay">
+        <div class="auth-card">
+            <div class="auth-card-border-chase"></div>
+            
+            <div class="auth-card-content">
+                <div class="auth-header">
+                    <div class="auth-logo-wrapper">
+                        <img src="https://copilot.microsoft.com/th/id/BCO.5667c5ce-52e8-47e4-bcfd-bdd084c0ba59.png" alt="SYL Logo Inicial" class="auth-logo">
+                    </div>
+                </div>
+                
+                <h2>Identificação</h2>
+                <p>Digite seu nome para continuar</p>
+                
+                <div class="input-container">
+                    <input type="text" id="user-name-input" placeholder="Ex: João Silva" autocomplete="off">
+                    <span class="input-bar"></span>
+                </div>
+                
+                <button id="btn-continue" class="auth-button">
+                    <span>Continuar</span>
+                    <svg class="auth-btn-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="dashboard-content" class="dashboard-wrapper dashboard-hidden">
+        <header class="app-header">
+            <div class="header-container">
+                <div class="header-left">
+                    <div class="logo-container">
+                        <img src="https://copilot.microsoft.com/th/id/BCO.65351cc9-6234-455f-810f-4dcd7cefbf47.png" alt="SYL Logo" class="app-logo">
+                        <div class="logo-divider"></div>
+                        <span class="logo-subtext">Módulo Pedestre</span>
+                    </div>
+                </div>
+                <div class="header-right">
+                    <span class="app-brand-title">SYL - Safe Your Life</span>
+                </div>
+            </div>
+        </header>
+
+        <main class="app-main">
+            <div id="main-bg-layer" class="hero-visual-bg"></div>
+            
+            <section id="main-section-layout" class="main-layout-container">
+                <div id="unified-card-wrapper" class="mobile-unified-card">
+                    
+                    <div id="presentation-view" class="presentation-section">
+                        <div class="status-indicator">
+                            <span class="status-dot"></span>
+                            <span class="status-text">Ambiente Ativo</span>
+                        </div>
+                        <h1 class="main-title">Olá, <span id="welcome-username" class="user-highlight">Pedestre</span>. Sua segurança em primeiro lugar, a cada passo.</h1>
+                        <p class="main-description">
+                            Bem-vindo ao ecossistema urbano inteligente **SYL**. Conectamos dados em tempo real e inteligência preventiva para proteger sua integridade.
+                        </p>
+                    </div>
+                    
+                    <div id="portal-view" class="interactive-section">
+                        <div class="portal-card">
+                            <div class="card-icon-header">
+                                <div class="icon-circle">
+                                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
+                                </div>
+                            </div>
+                            <h2>Acesso ao Painel</h2>
+                            <p>Entre no mapa tático e configure alertas de zona de risco.</p>
+                            
+                            <button id="btn-access-platform" class="cta-button">
+                                <span>Acessar plataforma</span>
+                                <svg class="cta-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div id="loading-screen" class="loading-container display-none">
+                        <div class="loading-content">
+                            <div class="loading-spinner-wrapper">
+                                <div class="pulse-glow"></div>
+                                <img src="https://copilot.microsoft.com/th/id/BCO.65351cc9-6234-455f-810f-4dcd7cefbf47.png" alt="SYL Mini" class="loading-mini-logo">
+                            </div>
+                            <h3>Inicializando Módulo</h3>
+                            <p>Sincronizando dados de satélite urbano inteligente...</p>
+                            <div class="progress-bar-container">
+                                <div id="main-progress-bar" class="progress-bar-fill"></div>
+                            </div>
+                            <span id="progress-percentage" class="progress-text">0%</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <div id="app-menu-screen" class="app-menu-container display-none">
+                <div class="cyber-grid-overlay"></div>
+                <div class="glow-orb orb-1"></div>
+                <div class="glow-orb orb-2"></div>
+                <div class="glow-orb orb-3"></div>
+
+                <div class="immersive-phone-inner">
+                    <div class="phone-status-bar">
+                        <span id="phone-time" class="status-time">00:00</span>
+                        <div class="dynamic-island">
+                            <div class="island-dot"></div>
+                            <span class="island-label">SYL - Safe Your Life</span>
+                        </div>
+                        <div class="status-icons-placeholder"></div>
+                    </div>
+
+                    <div class="menu-phone-header-premium">
+                        <div class="menu-user-profile">
+                            <div class="profile-avatar">
+                                <div class="avatar-radar"></div>
+                                <span>AI</span>
+                            </div>
+                            <div class="profile-info">
+                                <span class="user-welcome-label">Usuário Logado:</span>
+                                <h4 id="menu-username-display">CARREGANDO...</h4>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="menu-grid-buttons-premium">
+                        <button class="menu-grid-item-premium item-blue" onclick="console.log('Site')">
+                            <div class="btn-glow-layer"></div>
+                            <div class="btn-corner-details"></div>
+                            <div class="item-icon-wrapper">
+                                <span class="icon-pulse-layer"></span>
+                                <i class="fas fa-globe"></i>
+                            </div>
+                            <div class="btn-meta-content">
+                               <small>Site Oficial</small>
+                            </div>
+                            <div class="btn-action-arrow">➔</div>
+                        </button>
+                        
+                        <button class="menu-grid-item-premium item-green" onclick="console.log('Mapa')">
+                            <div class="btn-glow-layer"></div>
+                            <div class="btn-corner-details"></div>
+                            <div class="item-icon-wrapper">
+                                <span class="icon-pulse-layer"></span>
+                                <i class="fas fa-map-marked-alt"></i>
+                            </div>
+                            <div class="btn-meta-content">
+                              <small>Acessar Mapa</small>
+                            </div>
+                            <div class="btn-action-arrow">➔</div>
+                        </button>
+                        
+                        <button class="menu-grid-item-premium item-amber" onclick="console.log('Configurações')">
+                            <div class="btn-glow-layer"></div>
+                            <div class="btn-corner-details"></div>
+                            <div class="item-icon-wrapper">
+                                <span class="icon-pulse-layer"></span>
+                                <i class="fas fa-cog"></i>
+                            </div>
+                            <div class="btn-meta-content">
+                               <small>Ajustes</small>
+                            </div>
+                            <div class="btn-action-arrow">➔</div>
+                        </button>
+
+                        <button id="btn-admin-panel" class="menu-grid-item-premium item-blue" style="display: none; border: 1px dashed #3b82f6;">
+                            <div class="btn-glow-layer" style="background: radial-gradient(circle, rgba(59,130,246,0.2) 0%, transparent 70%);"></div>
+                            <div class="btn-corner-details"></div>
+                            <div class="item-icon-wrapper">
+                                <span class="icon-pulse-layer" style="background: rgba(59,130,246,0.4);"></span>
+                                <i class="fas fa-sliders-h"></i>
+                            </div>
+                            <div class="btn-meta-content">
+                               <small>Painel de Controle</small>
+                            </div>
+                            <div class="btn-action-arrow">➔</div>
+                        </button>
+                        
+                        <button class="menu-grid-item-premium item-purple" onclick="console.log('Sobre')">
+                            <div class="btn-glow-layer"></div>
+                            <div class="btn-corner-details"></div>
+                            <div class="item-icon-wrapper">
+                                <span class="icon-pulse-layer"></span>
+                                <i class="fas fa-info-circle"></i>
+                            </div>
+                            <div class="btn-meta-content">
+                                <small>Sobre</small>
+                            </div>
+                            <div class="btn-action-arrow">➔</div>
+                        </button>
+                        
+                        <button id="btn-menu-logout" class="menu-grid-item-premium item-danger">
+                            <div class="btn-glow-layer"></div>
+                            <div class="item-icon-wrapper"><i class="fas fa-sign-out-alt"></i></div>
+                            <div class="btn-meta-content">
+                                <span>Desconectar Terminal</span>
+                                <small>Encerrar Sessão Segura</small>
+                            </div>
+                        </button>
+                    </div>
+                    
+                    <div class="phone-home-indicator"></div>
+                </div>
+            </div>
+        </main>
+
+        <footer class="app-footer">
+            <div class="footer-container">
+                <div class="footer-left">
+                    <p class="copyright-text">&copy; SYL - Todos os direitos reservados.</p>
+                </div>
+                <div class="footer-right">
+                    <div class="clock-container">
+                        <div id="digital-clock" class="digital-clock">00:00:00</div>
+                    </div>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <div id="settings-modal" class="settings-overlay display-none">
+        <div class="settings-card">
+            <h3>Configurações de Alerta</h3>
+            
+            <div class="setting-group">
+                <label>Cor do Marcador:</label>
+                <input type="color" id="marker-color-picker" value="#00ff00">
+            </div>
+
+            <div class="setting-group">
+                <label>Modo de Notificação:</label>
+                <select id="alert-mode-select">
+                    <option value="audio">Somente Áudio</option>
+                    <option value="vibrate">Somente Vibrar</option>
+                    <option value="both">Áudio e Vibrar</option>
+                </select>
+            </div>
+
+            <button id="btn-save-settings" class="auth-button">Salvar Alterações</button>
+        </div>
+    </div>
+
+    <div id="logout-confirm-modal" class="settings-overlay display-none">
+        <div class="settings-card logout-confirm-card">
+            <h3>Encerrar Sessão</h3>
+            <p>Você tem certeza de que deseja desconectar o terminal?</p>
+            <div class="logout-actions">
+                <button id="btn-logout-no" class="auth-button secondary">Não</button>
+                <button id="btn-logout-yes" class="auth-button danger">Sim</button>
+            </div>
+        </div>
+    </div>   
+
+    <div id="map-loading-screen" class="map-loading-overlay display-none">
+        <div class="loading-content">
+            <h3>Carregando Mapa Tático</h3>
+            <p id="map-loading-text">Inicializando cartografia urbana...</p>
+            <div class="progress-bar-container">
+                <div id="map-progress-bar" class="progress-bar-fill"></div>
+            </div>
+            <span id="map-progress-percentage">0%</span>
+        </div>
+    </div>  
+
+    <div id="map-container" class="display-none" style="height: 100vh; width: 100%; position: absolute; top: 0; z-index: 500;"></div>
+
+    <div id="map-exit-modal" class="display-none" style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index: 2000; display:flex; justify-content:center; align-items:center;">
+        <div style="background:#1f2937; padding:20px; border-radius:10px; text-align:center; color:white;">
+            <p>Tem certeza que deseja se desconectar do mapa?</p>
+            <button id="btn-map-exit-yes" style="margin:10px; padding:10px 20px; background:red; border:none; color:white; cursor:pointer;">Sim</button>
+            <button id="btn-map-exit-no" style="margin:10px; padding:10px 20px; background:green; border:none; color:white; cursor:pointer;">Não</button>
+        </div>
+    </div>
+
+    <button id="btn-open-exit-modal" style="position:absolute; top:80px; right:10px; z-index:1000; padding:10px;">Sair do Mapa</button>
+  <script src="https://cdn.ably.com/lib/ably.min-1.js"></script>
+
+    <script src="app.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
